@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(120deg, #f6d365, #fda085);
+        margin: 0;
+      }
+
+      .weather-app {
+        text-align: center;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      }
+
+      input {
+        padding: 10px;
+        width: 200px;
+        margin-right: 10px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        opacity: 0.8;
+      }
+
+      #result {
+        margin-top: 20px;
+      }
+
+      /* Update your navigation container */
+      .glass-nav {
+          display: flex;
+          align-items: center;
+          padding: 10px 25px;
+          position: fixed;
+          /* This makes it look like a floating pill */
+          width: 90%; 
+          max-width: 1100px;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          
+          /* The "Glass" look */
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(10px);
+          border-radius: 50px; /* High value for the pill shape */
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+          z-index: 1000;
+      }
+
+      /* Align logo and text */
+      .logo-box {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+      }
+
+      .logo-box img {
+          height: 50px; /* Adjusted to match your screenshot */
+          width: 50px;
+          border-radius: 12px;
+          object-fit: cover;
+      }
+
+      .logo-text {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #1e3a8a;
+          font-family: 'Segoe UI', sans-serif;
+      }
+
+      .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 15px;
+          margin-top: 30px;
+          border-top: 1px solid rgba(0,0,0,0.1);
+          padding-top: 20px;
+      }
+
+      .stat-card {
+          background: rgba(255, 255, 255, 0.5);
+          padding: 15px;
+          border-radius: 12px;
+          display: flex;
+          flex-direction: column;
+          font-size: 0.9rem;
+      }
+
+      .stat-card strong {
+          font-size: 1.1rem;
+          color: #1e3a8a;
+          margin-top: 5px;
+      }
+
+    </style>
+
+</head>
+<body>
+  <div class="glass-nav">
+    <div class="logo-box">
+      <img src="logo.jpg" alt="Logo">
+      <span class="logo-text">Wheather App</span>
+    </div>
+  </div>
+
+  <div class="weather-app">
+    <h1>Weather Analysis</h1>
+    <input type="text" id="city" placeholder="Enter city name"><br><br><br>
+    <button id="search">Search</button>
+    <button id="get-location" style="background: #4CAF50;">📍 Use My Location</button>
+
+    <div id="result">
+      <h2 id="city-name"></h2>
+      <p id="temp" style="font-size: 2rem; font-weight: bold;"></p>
+      <p id="desc"></p>
+    </div>
+
+    <div id="stats-grid" class="stats-grid" style="display: none;">
+      <div class="stat-card">
+        <span>Feels Like</span>
+        <strong id="feels-like">--</strong>
+      </div>
+      <div class="stat-card">
+        <span>Humidity</span>
+        <strong id="humidity">--</strong>
+      </div>
+      <div class="stat-card">
+        <span>Wind</span>
+        <strong id="wind">--</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const apiKey = "2ba31afa2f5429e5c1ca336779e50f24";
+    const cityName = document.getElementById("city-name");
+    const tempText = document.getElementById("temp");
+    const descText = document.getElementById("desc");
+
+    // Helper to update UI and Background
+    function updateUI(data) {
+      // 1. Update Text
+      cityName.textContent = data.name;
+      tempText.textContent = `Temperature: ${data.main.temp} °C`;
+      descText.textContent = `Condition: ${data.weather[0].description}`;
+
+      // 2. Update Background based on weather
+      const weatherMain = data.weather[0].main;
+      const body = document.body;
+
+      if (weatherMain === "Clear") {
+        body.style.background = "linear-gradient(to bottom, #f7b733, #fc4a1a)";
+      } else if (weatherMain === "Rain" || weatherMain === "Drizzle") {
+        body.style.background = "linear-gradient(to bottom, #203a43, #2c5364)";
+      } else if (weatherMain === "Clouds") {
+        body.style.background = "linear-gradient(to bottom, #bdc3c7, #2c3e50)";
+      } else {
+        body.style.background = "linear-gradient(to bottom, #60a5fa, #ffffff)"; // Default Blue
+      }
+    }
+
+    // --- OPTION: Search by City Name ---
+    document.getElementById("search").addEventListener("click", () => {
+      const city = document.getElementById("city").value;
+      if (!city) return;
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+          .then(res => {
+            if (!res.ok) throw new Error();
+              return res.json();
+          })
+          .then(data => updateUI(data)) // Logic moved inside the helper
+          .catch(() => {
+            cityName.textContent = "Oops! City not found.";
+            tempText.textContent = "";
+            descText.textContent = "";
+          });
+    });
+
+    // --- OPTION: Current Location (GPS) ---
+    document.getElementById("get-location").addEventListener("click", () => {
+      if (navigator.geolocation) {
+        cityName.textContent = "Locating...";
+
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+
+          fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
+          .then(res => res.json())
+          .then(data => updateUI(data))
+          .catch(() => {
+            cityName.textContent = "Unable to get weather for your location.";
+          });
+          }, () => {
+          cityName.textContent = "Location access denied.";
+        });
+        } else {
+          cityName.textContent = "Geolocation not supported.";
+        }
+    });
+
+    function updateUI(data) {
+        // Show the grid
+        document.getElementById("stats-grid").style.display = "grid";
+
+        // Update Main Info
+        document.getElementById("city-name").textContent = data.name;
+        document.getElementById("temp").textContent = `${Math.round(data.main.temp)}°C`;
+        document.getElementById("desc").textContent = data.weather[0].description;
+
+        // Update Detailed Stats
+        document.getElementById("feels-like").textContent = `${Math.round(data.main.feels_like)}°C`;
+        document.getElementById("humidity").textContent = `${data.main.humidity}%`;
+        document.getElementById("wind").textContent = `${data.wind.speed} m/s`;
+
+        // Background Logic
+        const weatherMain = data.weather[0].main;
+        const body = document.body;
+        if (weatherMain === "Clear") {
+            body.style.background = "linear-gradient(to bottom, #f7b733, #fc4a1a)";
+        } else if (weatherMain === "Rain") {
+            body.style.background = "linear-gradient(to bottom, #203a43, #2c5364)";
+        } else {
+            body.style.background = "linear-gradient(to bottom, #60a5fa, #ffffff)";
+        }
+    }
+    
+  </script>
+</body>
+</html>
