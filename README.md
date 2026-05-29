@@ -3,9 +3,8 @@ Task 5:Wheather App with API integration.
 
 ![Status](https://img.shields.io/badge/Status-Completed-success)
 
-![Made with Love](https://img.shields.io/badge/Made%20with-Love-red)
+![Made with Passion](https://img.shields.io/badge/Made%20with-Passion-red)
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
 
 ### 🐍 CODSOFT Web Development Internship
 
