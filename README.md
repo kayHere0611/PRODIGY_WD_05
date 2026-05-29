@@ -1,9 +1,8 @@
 # PRODIGY_WD_05
 Task 5:Wheather App with API integration.
 
-![Status](https://img.shields.io/badge/Status-Completed-success)
-
-![Made with Passion](https://img.shields.io/badge/Made%20with-Passion-red)
+![API](https://img.shields.io/badge/Data-OpenWeather-orange?logo=openweathermap)
+![Geolocation](https://img.shields.io/badge/Feature-Geolocation-blue?logo=googlemaps)
 
 
 ### 🐍 CODSOFT Web Development Internship
